@@ -1,29 +1,31 @@
-import { useState } from "react";
 import './App.css'
+import { useSelector, useDispatch } from 'react-redux'
+import { decrement, increment, incrementByAmount } from './redux/counter/counterSlice'
+import { useState } from 'react';
 
 function App() {
-  const [counter, setCounter] = useState(0);
-  const [showError, setShowError] = useState(false);
-  const [counterArray, setCounterArray] = useState([]);
+  const [input, setInput] = useState('');
+  const counter = useSelector((state) => state.counter.value);
+  const dispatch = useDispatch();
 
   const increaseCounter = () => {
-    if(showError) {
-      setShowError(false);
-    }
-    if(!counterArray.includes(counter+1))
-      setCounterArray([...counterArray, counter+1]);
-    setCounter(counter+1);
+    dispatch(increment())
   }
 
   const decreaseCounter = () => {
-    if(counter === 0){
-      setShowError(true);
-      return;
-    }
-    if(!counterArray.includes(counter-1))
-      setCounterArray([...counterArray, counter-1]);
-    setCounter(counter-1);
+    dispatch(decrement())
   }
+
+  const onChangeValue = (event) => {
+    if(!Number(event.target.value)) return;
+    setInput(event.target.value)
+  }
+
+  const increaseValueByAmount = () => {
+    dispatch(incrementByAmount(Number(input)))
+  }
+
+  console.log('Counter', counter);
 
   return (
     <div>
@@ -40,12 +42,10 @@ function App() {
           +
         </button> 
       </div>
-      {showError && (
-        <div className="box">
-          Value cannot be lower than zero!
-        </div>)
-      }
-      {counterArray.map(el => <div>{el} was counted</div>)}
+      <div>
+        <input value={input} onChange={onChangeValue}></input>
+        <button onClick={increaseValueByAmount}>Add amount</button>
+      </div>
     </div>
   );
 }
